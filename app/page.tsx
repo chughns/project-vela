@@ -26,12 +26,12 @@ export default function Home() {
             Now accepting new trip plans
           </div>
           <h1 className="mt-6 max-w-4xl text-5xl sm:text-7xl font-semibold tracking-tight leading-[1.02] text-slate-900">
-            Fund your dream trip with credit card points.
+            Discover what your points can unlock.
           </h1>
           <p className="mt-7 text-lg sm:text-xl text-slate-600 max-w-2xl leading-relaxed">
-            Tell us where you want to go. We&apos;ll build a personalized 6–12
-            month plan to earn the points you need — using strategic credit
-            card applications and everyday spending.
+            Tell us your dream trip. We build a custom plan to get you there
+            using miles and points — using what you have, earning what you
+            need, or both.
           </p>
           <div className="mt-10 flex flex-col sm:flex-row gap-3">
             <Link
@@ -64,29 +64,29 @@ export default function Home() {
               How it works
             </p>
             <h2 className="mt-3 text-3xl sm:text-5xl font-semibold tracking-tight text-slate-900">
-              Three steps from dream to boarding pass.
+              How Vela works.
             </h2>
             <p className="mt-4 text-lg text-slate-600">
-              No churning forums. No spreadsheets. No guesswork. Just a clear
-              plan that fits your life.
+              Whether you&apos;ve got points already or you&apos;re starting
+              fresh, the path is the same.
             </p>
           </div>
 
           <div className="mt-14 grid gap-6 sm:grid-cols-3">
             <Step
               n="01"
-              title="Tell us your dream trip"
-              body="A short intake form: where you want to go, when, who's coming, and how flexible you are. Takes about 5 minutes."
+              title="Tell us your trip and your points"
+              body="A short intake: where you want to go, when, who's coming, and whatever points you have today. Takes about 5 minutes."
             />
             <Step
               n="02"
-              title="We build your points plan"
-              body="A personalized 6–12 month roadmap of credit card applications and spending categories — sized to your goal and your credit profile."
+              title="We build your strategy"
+              body="The best way to use the points you have. Plus a roadmap of cards and spending to earn the rest, if you need them."
             />
             <Step
               n="03"
-              title="Earn, then book"
-              body="Follow the plan, hit your sign-up bonuses, and redeem the points for flights and hotels when you're ready to fly."
+              title="Take the trip"
+              body="Book with confidence using a tested redemption plan. No spreadsheets, no forum-trawling, no guesswork."
             />
           </div>
         </div>
