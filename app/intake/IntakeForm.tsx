@@ -167,9 +167,55 @@ const CREDIT_SCORE = [
   { value: "skip", label: "Prefer not to say" },
 ];
 
+const PROGRAM_CATEGORIES = [
+  { id: "credit_card", label: "Credit card points" },
+  { id: "airline", label: "Airline miles" },
+  { id: "hotel", label: "Hotel points" },
+];
+
+const POINT_PROGRAMS = [
+  { id: "chase_ur", label: "Chase Ultimate Rewards", category: "credit_card" },
+  { id: "amex_mr", label: "Amex Membership Rewards", category: "credit_card" },
+  { id: "capital_one", label: "Capital One Venture", category: "credit_card" },
+  { id: "citi_ty", label: "Citi ThankYou", category: "credit_card" },
+  { id: "bilt", label: "Bilt Rewards", category: "credit_card" },
+  { id: "delta", label: "Delta SkyMiles", category: "airline" },
+  { id: "united", label: "United MileagePlus", category: "airline" },
+  { id: "aa", label: "American AAdvantage", category: "airline" },
+  { id: "southwest", label: "Southwest Rapid Rewards", category: "airline" },
+  { id: "alaska", label: "Alaska Mileage Plan", category: "airline" },
+  { id: "marriott", label: "Marriott Bonvoy", category: "hotel" },
+  { id: "hilton", label: "Hilton Honors", category: "hotel" },
+  { id: "hyatt", label: "World of Hyatt", category: "hotel" },
+  { id: "ihg", label: "IHG One Rewards", category: "hotel" },
+];
+
+const AMOUNT_BANDS = [
+  { value: "<50", label: "Under 50k" },
+  { value: "50-150", label: "50–150k" },
+  { value: "150-300", label: "150–300k" },
+  { value: "300-500", label: "300–500k" },
+  { value: "500+", label: "500k+" },
+  { value: "unsure", label: "Not sure" },
+];
+
+function serializePointAmounts(amounts: Record<string, string>): string {
+  return Object.entries(amounts)
+    .map(([id, band]) => {
+      const program = POINT_PROGRAMS.find((p) => p.id === id);
+      const bandObj = AMOUNT_BANDS.find((b) => b.value === band);
+      const programLabel = program?.label ?? id;
+      const bandLabel = bandObj?.label ?? "Amount not specified";
+      return `${programLabel}: ${bandLabel}`;
+    })
+    .join(" · ");
+}
+
 export default function IntakeForm() {
   const [service, setService] = useState<string>("");
-  const [existingPoints, setExistingPoints] = useState("");
+  const [pointAmounts, setPointAmounts] = useState<Record<string, string>>(
+    {},
+  );
   const [destination, setDestination] = useState<string>("");
   const [destinationOther, setDestinationOther] = useState("");
   const [timeframe, setTimeframe] = useState("");
@@ -195,10 +241,13 @@ export default function IntakeForm() {
     setSubmitting(true);
     setError(null);
 
+    const serializedPoints = serializePointAmounts(pointAmounts);
     const row = {
       service: service || null,
       existing_points:
-        service !== "earn_new" ? existingPoints || null : null,
+        service !== "earn_new" && serializedPoints
+          ? serializedPoints
+          : null,
       destination: destination || null,
       destination_other:
         destination === "else" ? destinationOther || null : null,
@@ -266,15 +315,96 @@ export default function IntakeForm() {
         {(service === "use_existing" || service === "both") && (
           <Field
             label="Tell us about the points you already have"
-            hint="Rough numbers are fine. List any program you've got — Chase UR, Amex MR, airline miles, hotel points, etc. The mix matters more than you'd think."
+            hint="Pick the programs you have. Then for each, ballpark the balance — exact numbers aren't needed."
           >
-            <textarea
-              value={existingPoints}
-              onChange={(e) => setExistingPoints(e.target.value)}
-              rows={4}
-              placeholder="e.g., Chase Ultimate Rewards: 200k · Amex MR: 150k · Delta SkyMiles: 80k · Hilton Honors: 250k..."
-              className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 resize-none"
-            />
+            <div className="space-y-5">
+              {PROGRAM_CATEGORIES.map((cat) => {
+                const programsInCat = POINT_PROGRAMS.filter(
+                  (p) => p.category === cat.id,
+                );
+                return (
+                  <div key={cat.id}>
+                    <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
+                      {cat.label}
+                    </h4>
+                    <div className="flex flex-wrap gap-2">
+                      {programsInCat.map((program) => {
+                        const selected = program.id in pointAmounts;
+                        return (
+                          <button
+                            type="button"
+                            key={program.id}
+                            onClick={() => {
+                              setPointAmounts((prev) => {
+                                if (program.id in prev) {
+                                  const next = { ...prev };
+                                  delete next[program.id];
+                                  return next;
+                                }
+                                return { ...prev, [program.id]: "" };
+                              });
+                            }}
+                            className={`rounded-full border px-3.5 py-1.5 text-sm transition ${
+                              selected
+                                ? "border-indigo-600 bg-indigo-50 text-indigo-900"
+                                : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50"
+                            }`}
+                          >
+                            {program.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {Object.keys(pointAmounts).length > 0 && (
+              <div className="mt-8 space-y-5 border-t border-slate-200 pt-6">
+                <p className="text-sm font-medium text-slate-900">
+                  Roughly how many in each?
+                </p>
+                {Object.keys(pointAmounts).map((programId) => {
+                  const program = POINT_PROGRAMS.find(
+                    (p) => p.id === programId,
+                  );
+                  if (!program) return null;
+                  return (
+                    <div key={programId}>
+                      <p className="text-sm text-slate-700 mb-2">
+                        {program.label}
+                      </p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {AMOUNT_BANDS.map((band) => {
+                          const isSelected =
+                            pointAmounts[programId] === band.value;
+                          return (
+                            <button
+                              type="button"
+                              key={band.value}
+                              onClick={() =>
+                                setPointAmounts((prev) => ({
+                                  ...prev,
+                                  [programId]: band.value,
+                                }))
+                              }
+                              className={`rounded-full border px-3 py-1 text-xs transition ${
+                                isSelected
+                                  ? "border-indigo-600 bg-indigo-600 text-white"
+                                  : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50"
+                              }`}
+                            >
+                              {band.label}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </Field>
         )}
       </Section>
