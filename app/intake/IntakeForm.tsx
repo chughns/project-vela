@@ -184,6 +184,7 @@ export default function IntakeForm() {
   const [creditScore, setCreditScore] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -574,27 +575,63 @@ export default function IntakeForm() {
         </div>
       </Section>
 
-      {/* Submit */}
-      <div className="border-t border-slate-200 pt-8">
-        <button
-          type="submit"
-          disabled={submitting}
-          className="w-full sm:w-auto inline-flex items-center justify-center rounded-full bg-slate-900 text-white px-8 py-4 text-base font-medium shadow-sm hover:bg-slate-700 transition disabled:opacity-60 disabled:cursor-not-allowed"
-        >
-          {submitting ? "Submitting..." : "Submit my trip plan request"}
-          {!submitting && (
-            <span aria-hidden className="ml-2">
-              →
-            </span>
+      {/* Terms agreement + Submit */}
+      <div className="border-t border-slate-200 pt-8 space-y-5">
+        <label className="flex items-start gap-3 cursor-pointer group">
+          <input
+            type="checkbox"
+            checked={agreedToTerms}
+            onChange={(e) => setAgreedToTerms(e.target.checked)}
+            required
+            className="mt-1 h-5 w-5 rounded border-slate-300 text-indigo-600 focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+          />
+          <span className="text-sm text-slate-700 leading-relaxed">
+            I agree to the{" "}
+            <a
+              href="/terms"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-indigo-600 underline underline-offset-2 hover:text-indigo-700"
+            >
+              Terms of Service
+            </a>{" "}
+            and{" "}
+            <a
+              href="/privacy"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-indigo-600 underline underline-offset-2 hover:text-indigo-700"
+            >
+              Privacy Policy
+            </a>
+            , and I understand that Vela&apos;s recommendations are not
+            financial advice.
+          </span>
+        </label>
+
+        <div>
+          <button
+            type="submit"
+            disabled={submitting || !agreedToTerms}
+            className="w-full sm:w-auto inline-flex items-center justify-center rounded-full bg-slate-900 text-white px-8 py-4 text-base font-medium shadow-sm hover:bg-slate-700 transition disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            {submitting ? "Submitting..." : "Submit my trip plan request"}
+            {!submitting && (
+              <span aria-hidden className="ml-2">
+                →
+              </span>
+            )}
+          </button>
+          {error && (
+            <p className="mt-4 text-sm text-red-600 leading-relaxed">
+              {error}
+            </p>
           )}
-        </button>
-        {error && (
-          <p className="mt-4 text-sm text-red-600 leading-relaxed">{error}</p>
-        )}
-        <p className="mt-3 text-sm text-slate-500">
-          You&apos;ll get an email within 3 business days with your custom
-          plan.
-        </p>
+          <p className="mt-3 text-sm text-slate-500">
+            You&apos;ll get an email within 3 business days with your custom
+            plan.
+          </p>
+        </div>
       </div>
     </form>
   );

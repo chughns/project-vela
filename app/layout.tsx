@@ -62,7 +62,7 @@ export default function RootLayout({
         <main className="flex-1 flex flex-col">{children}</main>
 
         <footer className="border-t border-slate-200">
-          <div className="mx-auto max-w-6xl px-6 py-10 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-slate-500">
+          <div className="mx-auto max-w-6xl px-6 py-10 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-slate-500">
             <div className="flex items-center gap-2.5">
               <span
                 aria-hidden
@@ -70,6 +70,20 @@ export default function RootLayout({
               />
               <span>© 2026 Project Vela</span>
             </div>
+            <nav className="flex items-center gap-5">
+              <Link
+                href="/terms"
+                className="hover:text-slate-900 transition"
+              >
+                Terms
+              </Link>
+              <Link
+                href="/privacy"
+                className="hover:text-slate-900 transition"
+              >
+                Privacy
+              </Link>
+            </nav>
             <p className="text-slate-400">Built one weekend at a time.</p>
           </div>
         </footer>
